@@ -94,6 +94,7 @@ for i,v in enumerate(mat):
     link = extractedHtml.xpath(f'//*[@id="pkg-resources"]/div[{v}]/div/a[2]/@href')
     download(link[0],categorias[i])
     
+#sadadad
 
 
 
