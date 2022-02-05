@@ -11,7 +11,8 @@ import pandas as pd
 import os
 import io
 from fuzzywuzzy import fuzz
-
+from sql import engine
+#%%
 #Funcion que realiza guardado del archivo
 def save(file_name, records):
     """Retorna None,
@@ -52,7 +53,7 @@ def download(url, categoria):
     response = requests.get(url)
     response.encoding='utf-8'
     
-    año,mes,hoy_string, hoy=fecha()
+    año,mes,hoy_string=fecha()
     file= categoria + "/" + str(año) +'-'+ mes+ "/" + categoria+'-'+ hoy_string+ '.csv'
     save(file, response.text)# guarda datos segun el Path
     return file
@@ -72,7 +73,7 @@ def fecha():
     año= hoy.year
     mes= meses[hoy.month]
     hoy_string=datetime.strftime(hoy, '%d-%m-%Y')
-    return año,mes,hoy_string,hoy
+    return año,mes,hoy_string
         
 
 
@@ -89,13 +90,9 @@ url='https://datos.gob.ar/dataset/cultura-mapa-cultural-espacios-culturales'
 page= requests.get(url)
 extractedHtml = html.fromstring(page.content)
 
-def name_colum(valor, patron):
-    for column_df in valor.columns:
-        
-        for column in patron:
-            a=fuzz.WRatio(column,column_df)
-            if a>92:
-                print(a, column,column_df)
+def comparar(valor, patron):
+    a=fuzz.WRatio(column,column_df)
+    return a
 #%%
 
 def obtener_dataframes():
@@ -130,7 +127,25 @@ def obtener_dataframes():
        
 
 #%%
-df_cine,df=obtener_dataframes()  
-#%%
-df['fecha'] =fecha()[-1]       
+df_cine,df=obtener_dataframes() 
 
+#%%
+
+df.to_sql('tbl_data', con=engine, if_exists='replace')
+df_cine.to_sql('tbl_cine', con=engine, if_exists='replace')   
+
+#%%
+serie_cat=df.groupby(['categoria']).size()
+serie_pro_catt=df.groupby(['provincia','categoria']).size()
+#%%
+import numpy as np
+posible={'si':1, 'SI':1, 'Si':1, 'Sí':1, 'no':0, 'No':0, '0':0}
+df_cine.espacio_INCAA.replace(posible, inplace=True)
+
+df_resumen_cine=df_cine.pivot_table(index='provincia', values=[ 'Pantallas', 'Butacas', 'espacio_INCAA'],aggfunc=np.sum)
+
+df_resumen_cine.to_sql('tbl_resumen_cine', con=engine, if_exists='replace')
+
+    
+
+  
