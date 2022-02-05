@@ -1,0 +1,188 @@
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): datos.gob.ar:443
+DEBUG:urllib3.connectionpool:https://datos.gob.ar:443 "GET /dataset/cultura-mapa-cultural-espacios-culturales HTTP/1.1" 200 9980
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): datos.cultura.gob.ar:443
+DEBUG:urllib3.connectionpool:https://datos.cultura.gob.ar:443 "GET /dataset/37305de4-3cce-4d4b-9d9a-fec3ca61d09f/resource/4207def0-2ff7-41d5-9095-d42ae8207a5d/download/museo.csv HTTP/1.1" 200 307629
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): datos.cultura.gob.ar:443
+DEBUG:urllib3.connectionpool:https://datos.cultura.gob.ar:443 "GET /dataset/37305de4-3cce-4d4b-9d9a-fec3ca61d09f/resource/4207def0-2ff7-41d5-9095-d42ae8207a5d/download/museo.csv HTTP/1.1" 200 307629
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): datos.cultura.gob.ar:443
+DEBUG:urllib3.connectionpool:https://datos.cultura.gob.ar:443 "GET /dataset/37305de4-3cce-4d4b-9d9a-fec3ca61d09f/resource/392ce1a8-ef11-4776-b280-6f1c7fae16ae/download/cine.csv HTTP/1.1" 200 96427
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): datos.cultura.gob.ar:443
+DEBUG:urllib3.connectionpool:https://datos.cultura.gob.ar:443 "GET /dataset/37305de4-3cce-4d4b-9d9a-fec3ca61d09f/resource/392ce1a8-ef11-4776-b280-6f1c7fae16ae/download/cine.csv HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): datos.cultura.gob.ar:443
+DEBUG:urllib3.connectionpool:https://datos.cultura.gob.ar:443 "GET /dataset/37305de4-3cce-4d4b-9d9a-fec3ca61d09f/resource/01c6c048-dbeb-44e0-8efa-6944f73715d7/download/biblioteca_popular.csv HTTP/1.1" 200 511527
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): datos.cultura.gob.ar:443
+DEBUG:urllib3.connectionpool:https://datos.cultura.gob.ar:443 "GET /dataset/37305de4-3cce-4d4b-9d9a-fec3ca61d09f/resource/01c6c048-dbeb-44e0-8efa-6944f73715d7/download/biblioteca_popular.csv HTTP/1.1" 200 None
+INFO:sqlalchemy.engine.base.Engine:select version()
+INFO:sqlalchemy.engine.base.Engine:{}
+INFO:sqlalchemy.engine.base.Engine:select current_schema()
+INFO:sqlalchemy.engine.base.Engine:{}
+INFO:sqlalchemy.engine.base.Engine:SELECT CAST('test plain returns' AS VARCHAR(60)) AS anon_1
+INFO:sqlalchemy.engine.base.Engine:{}
+INFO:sqlalchemy.engine.base.Engine:SELECT CAST('test unicode returns' AS VARCHAR(60)) AS anon_1
+INFO:sqlalchemy.engine.base.Engine:{}
+INFO:sqlalchemy.engine.base.Engine:show standard_conforming_strings
+INFO:sqlalchemy.engine.base.Engine:{}
+INFO:sqlalchemy.engine.base.Engine:select relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where pg_catalog.pg_table_is_visible(c.oid) and relname=%(name)s
+INFO:sqlalchemy.engine.base.Engine:{'name': 'tbl_data'}
+INFO:sqlalchemy.engine.base.Engine:select relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where pg_catalog.pg_table_is_visible(c.oid) and relname=%(name)s
+INFO:sqlalchemy.engine.base.Engine:{'name': 'tbl_data'}
+INFO:sqlalchemy.engine.base.Engine:SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname = %(schema)s AND c.relkind in ('r', 'p')
+INFO:sqlalchemy.engine.base.Engine:{'schema': 'public'}
+INFO:sqlalchemy.engine.base.Engine:
+            SELECT c.oid
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE (pg_catalog.pg_table_is_visible(c.oid))
+            AND c.relname = %(table_name)s AND c.relkind in
+            ('r', 'v', 'm', 'f', 'p')
+        
+INFO:sqlalchemy.engine.base.Engine:{'table_name': 'tbl_data'}
+INFO:sqlalchemy.engine.base.Engine:
+            SELECT a.attname,
+              pg_catalog.format_type(a.atttypid, a.atttypmod),
+              (SELECT pg_catalog.pg_get_expr(d.adbin, d.adrelid)
+                FROM pg_catalog.pg_attrdef d
+               WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum
+               AND a.atthasdef)
+              AS DEFAULT,
+              a.attnotnull, a.attnum, a.attrelid as table_oid,
+              pgd.description as comment,
+              NULL as generated
+            FROM pg_catalog.pg_attribute a
+            LEFT JOIN pg_catalog.pg_description pgd ON (
+                pgd.objoid = a.attrelid AND pgd.objsubid = a.attnum)
+            WHERE a.attrelid = %(table_oid)s
+            AND a.attnum > 0 AND NOT a.attisdropped
+            ORDER BY a.attnum
+        
+INFO:sqlalchemy.engine.base.Engine:{'table_oid': 16461}
+INFO:sqlalchemy.engine.base.Engine:
+            SELECT t.typname as "name",
+               pg_catalog.format_type(t.typbasetype, t.typtypmod) as "attype",
+               not t.typnotnull as "nullable",
+               t.typdefault as "default",
+               pg_catalog.pg_type_is_visible(t.oid) as "visible",
+               n.nspname as "schema"
+            FROM pg_catalog.pg_type t
+               LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+            WHERE t.typtype = 'd'
+        
+INFO:sqlalchemy.engine.base.Engine:{}
+INFO:sqlalchemy.engine.base.Engine:
+            SELECT t.typname as "name",
+               -- no enum defaults in 8.4 at least
+               -- t.typdefault as "default",
+               pg_catalog.pg_type_is_visible(t.oid) as "visible",
+               n.nspname as "schema",
+               e.enumlabel as "label"
+            FROM pg_catalog.pg_type t
+                 LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+                 LEFT JOIN pg_catalog.pg_enum e ON t.oid = e.enumtypid
+            WHERE t.typtype = 'e'
+        ORDER BY "schema", "name", e.oid
+INFO:sqlalchemy.engine.base.Engine:{}
+INFO:sqlalchemy.engine.base.Engine:
+                SELECT a.attname
+                FROM pg_attribute a JOIN (
+                    SELECT unnest(ix.indkey) attnum,
+                           generate_subscripts(ix.indkey, 1) ord
+                    FROM pg_index ix
+                    WHERE ix.indrelid = %(table_oid)s AND ix.indisprimary
+                    ) k ON a.attnum=k.attnum
+                WHERE a.attrelid = %(table_oid)s
+                ORDER BY k.ord
+            
+INFO:sqlalchemy.engine.base.Engine:{'table_oid': 16461}
+INFO:sqlalchemy.engine.base.Engine:
+        SELECT conname
+           FROM  pg_catalog.pg_constraint r
+           WHERE r.conrelid = %(table_oid)s AND r.contype = 'p'
+           ORDER BY 1
+        
+INFO:sqlalchemy.engine.base.Engine:{'table_oid': 16461}
+INFO:sqlalchemy.engine.base.Engine:
+          SELECT r.conname,
+                pg_catalog.pg_get_constraintdef(r.oid, true) as condef,
+                n.nspname as conschema
+          FROM  pg_catalog.pg_constraint r,
+                pg_namespace n,
+                pg_class c
+
+          WHERE r.conrelid = %(table)s AND
+                r.contype = 'f' AND
+                c.oid = confrelid AND
+                n.oid = c.relnamespace
+          ORDER BY 1
+        
+INFO:sqlalchemy.engine.base.Engine:{'table': 16461}
+INFO:sqlalchemy.engine.base.Engine:
+              SELECT
+                  i.relname as relname,
+                  ix.indisunique, ix.indexprs, ix.indpred,
+                  a.attname, a.attnum, c.conrelid, ix.indkey::varchar,
+                  ix.indoption::varchar, i.reloptions, am.amname,
+                  NULL as indnkeyatts
+              FROM
+                  pg_class t
+                        join pg_index ix on t.oid = ix.indrelid
+                        join pg_class i on i.oid = ix.indexrelid
+                        left outer join
+                            pg_attribute a
+                            on t.oid = a.attrelid and a.attnum = ANY(ix.indkey)
+                        left outer join
+                            pg_constraint c
+                            on (ix.indrelid = c.conrelid and
+                                ix.indexrelid = c.conindid and
+                                c.contype in ('p', 'u', 'x'))
+                        left outer join
+                            pg_am am
+                            on i.relam = am.oid
+              WHERE
+                  t.relkind IN ('r', 'v', 'f', 'm', 'p')
+                  and t.oid = %(table_oid)s
+                  and ix.indisprimary = 'f'
+              ORDER BY
+                  t.relname,
+                  i.relname
+            
+INFO:sqlalchemy.engine.base.Engine:{'table_oid': 16461}
+INFO:sqlalchemy.engine.base.Engine:
+            SELECT
+                cons.conname as name,
+                cons.conkey as key,
+                a.attnum as col_num,
+                a.attname as col_name
+            FROM
+                pg_catalog.pg_constraint cons
+                join pg_attribute a
+                  on cons.conrelid = a.attrelid AND
+                    a.attnum = ANY(cons.conkey)
+            WHERE
+                cons.conrelid = %(table_oid)s AND
+                cons.contype = 'u'
+        
+INFO:sqlalchemy.engine.base.Engine:{'table_oid': 16461}
+INFO:sqlalchemy.engine.base.Engine:
+            SELECT
+                cons.conname as name,
+                pg_get_constraintdef(cons.oid) as src
+            FROM
+                pg_catalog.pg_constraint cons
+            WHERE
+                cons.conrelid = %(table_oid)s AND
+                cons.contype = 'c'
+        
+INFO:sqlalchemy.engine.base.Engine:{'table_oid': 16461}
+INFO:sqlalchemy.engine.base.Engine:
+            SELECT
+                pgd.description as table_comment
+            FROM
+                pg_catalog.pg_description pgd
+            WHERE
+                pgd.objsubid = 0 AND
+                pgd.objoid = %(table_oid)s
+        
+INFO:sqlalchemy.engine.base.Engine:{'table_oid': 16461}
+INFO:sqlalchemy.engine.base.Engine:
+DROP TABLE tbl_data
+INFO:sqlalchemy.engine.base.Engine:{}

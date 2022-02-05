@@ -12,10 +12,13 @@ import os
 import io
 from fuzzywuzzy import fuzz
 from sql import engine
+import logging
+import numpy as np
 #%%
-#Funcion que realiza guardado del archivo
+logging.basicConfig( level=logging.ERROR, filename='errores.log')
+
 def save(file_name, records):
-    """Retorna None,
+    """Funcion que realiza guardado del archivo,
     
     Returns:
         None
@@ -29,7 +32,6 @@ def save(file_name, records):
     csv_file.close()
     return  None
 
-# Funcion que chequea si existe el directory y si no existe lo crea
 def check_dir(file_name):
     """Chequea si existe el directorio sino lo genera,
     
@@ -41,8 +43,6 @@ def check_dir(file_name):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-
-#Recibe la repuesta del request y pide guardar el csv
 def download(url, categoria):
     """genera una descargar segun url y guarda archivos segun nombre de la categoria
     
@@ -58,8 +58,6 @@ def download(url, categoria):
     save(file, response.text)# guarda datos segun el Path
     return file
 
-
-#Obtener la fecha en el formato dd-mm-yyyy
 def fecha():
     """
     calcula la fecha actual
@@ -90,13 +88,11 @@ url='https://datos.gob.ar/dataset/cultura-mapa-cultural-espacios-culturales'
 page= requests.get(url)
 extractedHtml = html.fromstring(page.content)
 
-def comparar(valor, patron):
-    a=fuzz.WRatio(column,column_df)
-    return a
+
 #%%
 
 def obtener_dataframes():
-    # lista usada para definir a traves de XPath y pode descargar el link
+    """ lista usada para definir a traves de XPath y pode descargar el link"""
     mat= [4,5,2]
     categorias=['museos', 'cine', 'bibliotecas']
     columns= ['Cod_Loc', 'IdProvincia', 'IdDepartamento', 
@@ -126,19 +122,16 @@ def obtener_dataframes():
     
        
 
-#%%
+
+#corre la funcion para obtener los dos dataframes
 df_cine,df=obtener_dataframes() 
 
-#%%
-
+# carga de Dataframe a base de datos
 df.to_sql('tbl_data', con=engine, if_exists='replace')
 df_cine.to_sql('tbl_cine', con=engine, if_exists='replace')   
 
+
 #%%
-serie_cat=df.groupby(['categoria']).size()
-serie_pro_catt=df.groupby(['provincia','categoria']).size()
-#%%
-import numpy as np
 posible={'si':1, 'SI':1, 'Si':1, 'Sí':1, 'no':0, 'No':0, '0':0}
 df_cine.espacio_INCAA.replace(posible, inplace=True)
 
@@ -146,6 +139,11 @@ df_resumen_cine=df_cine.pivot_table(index='provincia', values=[ 'Pantallas', 'Bu
 
 df_resumen_cine.to_sql('tbl_resumen_cine', con=engine, if_exists='replace')
 
-    
-
-  
+#%%
+# sql_file=open("create.sql")    
+# sql_string= sql_file.read()
+# a=engine.execute(sql_string)
+#%%
+#Calculos de 
+serie_cat=df.groupby(['categoria']).size()
+serie_pro_cat=df.groupby(['provincia','categoria']).size()
