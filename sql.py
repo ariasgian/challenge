@@ -11,6 +11,14 @@ from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 model = declarative_base()
 
+def crear_db():
+    
+    """Genera Base de datos donde se guardan los datos"""
+    sql_file=open("create.sql")    
+    sql_string= sql_file.read()
+    engine.execute(sql_string)
+
+
 
 class MyTable(model):
     __tablename__ = 'tbl_data'
@@ -30,8 +38,9 @@ class MyTable(model):
     fecha= db.Column(db.DateTime, default=datetime.utcnow)
 
 
-
 path="postgresql://user_test:test1234@localhost/db_test"
+
 engine = db.create_engine(path, echo=True)
+#crear_db()
 # 
 #model.metadata.create_all(engine)

@@ -16,6 +16,8 @@ import logging
 import numpy as np
 #%%
 logging.basicConfig( level=logging.ERROR, filename='errores.log')
+#%%
+
 
 def save(file_name, records):
     """Funcion que realiza guardado del archivo,
@@ -31,7 +33,6 @@ def save(file_name, records):
     print(" record saved to ",file_name)
     csv_file.close()
     return  None
-
 def check_dir(file_name):
     """Chequea si existe el directorio sino lo genera,
     
@@ -42,7 +43,6 @@ def check_dir(file_name):
     directory = os.path.dirname(file_name)
     if not os.path.exists(directory):
         os.makedirs(directory)
-
 def download(url, categoria):
     """genera una descargar segun url y guarda archivos segun nombre de la categoria
     
@@ -57,7 +57,6 @@ def download(url, categoria):
     file= categoria + "/" + str(año) +'-'+ mes+ "/" + categoria+'-'+ hoy_string+ '.csv'
     save(file, response.text)# guarda datos segun el Path
     return file
-
 def fecha():
     """
     calcula la fecha actual
@@ -67,32 +66,22 @@ def fecha():
         hoy_string(format= dd-mm-yyyy)
         
     """
+    #Diccionario con los nombre de los meses
+    meses={1:'Enero', 2:'Febrero', 3:'Marzo', 4:'Abril', 5:'Mayo', 6:'Junio',7:'Julio', 8:'Agosto',9: 'Septiembre', 10:'Octubre', 11:'Noviembre', 12: 'Diciembre'}
+
     hoy=datetime.now()
     año= hoy.year
     mes= meses[hoy.month]
     hoy_string=datetime.strftime(hoy, '%d-%m-%Y')
     return año,mes,hoy_string
-        
-
-
-# creacion de dict y listas necesarias
-#Diccionario con los nombre de los meses
-meses={1:'Enero', 2:'Febrero', 3:'Marzo', 4:'Abril', 5:'Mayo', 6:'Junio',7:'Julio', 8:'Agosto',9: 'Septiembre', 10:'Octubre', 11:'Noviembre', 12: 'Diciembre'}
-
-
-
-
-#Se hace primer request de la pagina donde descargar los datasets
-url='https://datos.gob.ar/dataset/cultura-mapa-cultural-espacios-culturales'
-
-page= requests.get(url)
-extractedHtml = html.fromstring(page.content)
-
-
-#%%
-
 def obtener_dataframes():
     """ lista usada para definir a traves de XPath y pode descargar el link"""
+    
+    #Se hace primer request de la pagina donde descargar los datasets
+    url='https://datos.gob.ar/dataset/cultura-mapa-cultural-espacios-culturales'
+
+    page= requests.get(url)
+    extractedHtml = html.fromstring(page.content)
     mat= [4,5,2]
     categorias=['museos', 'cine', 'bibliotecas']
     columns= ['Cod_Loc', 'IdProvincia', 'IdDepartamento', 
@@ -119,31 +108,37 @@ def obtener_dataframes():
             data.rename(columns={'Domicilio':'direccion'}, inplace=True)
         df=pd.concat([df,data[columns]])
     return df_cine, df
+def cargar_bd(df,tabla):
+    """carga de Dataframe a base de datos"""
+    df.to_sql(tabla, con=engine, if_exists='replace')
     
-       
 
 
 #corre la funcion para obtener los dos dataframes
 df_cine,df=obtener_dataframes() 
 
-# carga de Dataframe a base de datos
-df.to_sql('tbl_data', con=engine, if_exists='replace')
-df_cine.to_sql('tbl_cine', con=engine, if_exists='replace')   
-
 
 #%%
+#correcion de la variable categorica conviertiendola en 0 o 1 y poder sumarla
 posible={'si':1, 'SI':1, 'Si':1, 'Sí':1, 'no':0, 'No':0, '0':0}
 df_cine.espacio_INCAA.replace(posible, inplace=True)
 
 df_resumen_cine=df_cine.pivot_table(index='provincia', values=[ 'Pantallas', 'Butacas', 'espacio_INCAA'],aggfunc=np.sum)
 
-df_resumen_cine.to_sql('tbl_resumen_cine', con=engine, if_exists='replace')
+
+#guardar en BD
+cargar_bd(df_resumen_cine,'tbl_resumen_cine')
+cargar_bd(df_cine, 'tbl_cine')  
+cargar_bd(df, 'tbl_data')  
 
 #%%
-# sql_file=open("create.sql")    
-# sql_string= sql_file.read()
-# a=engine.execute(sql_string)
-#%%
-#Calculos de 
-serie_cat=df.groupby(['categoria']).size()
-serie_pro_cat=df.groupby(['provincia','categoria']).size()
+#Calculos de los reumenes solicitados
+
+df_resumen=pd.DataFrame()
+
+serie_cat=df.groupby(['categoria']).size().rename('cant')
+
+serie_cat_prov=df.groupby(by=['provincia','categoria']).size().rename('cant')
+df_resumen['categoria']=serie_cat.append(serie_cat_prov)
+df_resumen.reset_index(inplace=True)
+cargar_bd(df_resumen, 'tbl_resumen') 
